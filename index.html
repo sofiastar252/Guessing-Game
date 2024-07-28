@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Number Guessing Game</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center;
+            background: linear-gradient(to right, #ff8c00, #ff4d94);
+            margin: 0;
+            padding: 0;
+            color: #fff;
+        }
+
+        h2 {
+            font-family: 'Playfair Display', serif;
+            background: linear-gradient(to right, #ff4d94, #ff8c00);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        p {
+            color: #eee;
+            font-size: 18px;
+        }
+
+        label {
+            display: block;
+            margin: 10px 0;
+            color: #ffcc00;
+            font-size: 16px;
+        }
+
+        input {
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ffcc00;
+            border-radius: 5px;
+            background-color: #fff;
+            color: #333;
+            font-size: 14px;
+        }
+
+        button {
+            padding: 12px;
+            background: linear-gradient(to right, #4caf50, #45a049);
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background: linear-gradient(to right, #45a049, #4caf50);
+        }
+
+        #feedback {
+            margin-top: 20px;
+            font-weight: bold;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <h2 style="color: #fff;">Sofia Starinnova's Fantastic Number Guessing Game</h2>
+    
+    <p>Welcome to the Number Guessing Game! Set the range and guess limit for the random number:</p>
+    
+    <label for="minRange">Minimum Range:</label>
+    <input type="number" id="minRange" placeholder="Enter minimum range">
+    
+    <label for="maxRange">Maximum Range:</label>
+    <input type="number" id="maxRange" placeholder="Enter maximum range">
+    
+    <label for="guessLimit">Guess Limit: <br>Then click "Start Game"</label>
+    <input type="number" id="guessLimit" placeholder="Enter guess limit">
+    
+    <button onclick="startGame()">Start Game</button>
+
+    <p style="color: #ffcc00;">Guess a number between <span id="rangeDisplay"></span></p>
+    
+    <input type="number" id="guessInput" placeholder="Enter your guess">
+    <button onclick="checkGuess()">Guess</button>
+    
+    <p id="feedback"></p>
+    <p id="timer"></p>
+
+    <script>
+        let minRange;
+        let maxRange;
+        let guessLimit;
+        let secretNumber;
+        let guesses = 0;
+        let timer;
+    
+        const feedbackElement = document.getElementById('feedback');
+        const rangeDisplay = document.getElementById('rangeDisplay');
+        const timerElement = document.getElementById('timer');
+    
+        function startGame() {
+            minRange = parseInt(document.getElementById('minRange').value) || 1;
+            maxRange = parseInt(document.getElementById('maxRange').value) || 100;
+            guessLimit = parseInt(document.getElementById('guessLimit').value) || 10;
+    
+            if (minRange >= maxRange || guessLimit <= 0) {
+                alert('Invalid range or guess limit! Please make sure the minimum range is less than the maximum range, and the guess limit is a positive number.');
+                return;
+            }
+    
+            rangeDisplay.textContent = `${minRange} and ${maxRange}`;
+    
+            secretNumber = Math.floor(Math.random() * (maxRange - minRange + 1)) + minRange;
+    
+            guesses = 0;
+    
+            // Set the countdown timer to 1 minute (60 seconds)
+            let seconds = 60;
+            timer = setInterval(function () {
+                timerElement.textContent = `Time left: ${seconds} seconds`;
+    
+                if (seconds === 0) {
+                    clearInterval(timer);
+                    endGame(true); // Pass true to indicate the game ended due to a timeout
+                }
+    
+                seconds--;
+            }, 1000);
+        }
+    
+        function checkGuess() {
+            const userGuess = parseInt(document.getElementById('guessInput').value);
+    
+            if (isNaN(userGuess)) {
+                alert('Please enter a valid number.');
+                return;
+            }
+    
+            guesses++;
+    
+            if (userGuess > secretNumber) {
+                feedbackElement.textContent = 'Too high! Try again.';
+            } else if (userGuess < secretNumber) {
+                feedbackElement.textContent = 'Too low! Try again.';
+            } else {
+                feedbackElement.textContent = `Correct! Well done. You guessed the number in ${guesses} ${guesses === 1 ? 'guess' : 'guesses'}.`;
+                endGame(false); // Pass false to indicate the game ended due to a correct guess
+                return; 
+            }
+    
+            if (guesses === guessLimit) {
+                feedbackElement.textContent = `Sorry, you've reached the maximum number of guesses. The correct number was ${secretNumber}.`;
+                endGame(true); // Pass true to indicate the game ended due to reaching the guess limit
+            }
+        }
+    
+        function endGame(timeout) {
+            clearInterval(timer);
+            if (timeout) {
+                feedbackElement.textContent = 'Game over!';
+            }
+        }
+    </script>
+    
+</body>
+</html>
